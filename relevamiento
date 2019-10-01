@@ -1,0 +1,6 @@
+relevamiento
+
+1. Dado un hrefSong (id unico de cada version de cancion. Ej: enanitos/amores_lejanos-7), va a haber dos servicios:
+    a) Obtener todo el <pre> con todo lo que contenga
+    b) Obtener todo el <pre> SIN el texto plano incluido (todo lo que tenga selector)
+    
