@@ -11,6 +11,12 @@ exports.getTabById = {
         const tab = await scrapUtils.getCompleteTabById(hrefTabId);
 
         return tab;
+    },
+    config: {
+        cors: {
+            origin: ['*'],
+            additionalHeaders: ['cache-control', 'x-requested-with']
+        }
     }
 }
 

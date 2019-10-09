@@ -11,7 +11,7 @@ const initHapi = (routes) => {
 
     const server: hapi.Server = new hapi.Server({
         host: 'localhost',
-        port: 8000
+        port: 3000
     });
 
     // Add all routes
