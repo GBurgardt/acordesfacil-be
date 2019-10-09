@@ -19,7 +19,8 @@
   "scripts": {
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --no-notify --transpileOnly ./src/server.ts",
-    "prod": "tsc && node ./dist/server.js"
+    "dev:prod": "ACORDESFACIL_IS_PROD=1 ts-node-dev --respawn --no-notify --transpileOnly ./src/server.ts",
+    "prod:TODO": "tsc && node ./dist/server.js"
   },
   "author": "",
   "license": "ISC"
