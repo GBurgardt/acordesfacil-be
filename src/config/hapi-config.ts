@@ -10,17 +10,22 @@ const initHapi = (routes, tls?) => {
     });
 
     if (tls) {
-        const server: hapi.Server = new hapi.Server();
-
-        server.connection({
-            address: '0.0.0.0',
+        const server: hapi.Server = new hapi.Server({
             port: 3000,
             tls: tls
         })
-        server.connection({
-            address: '0.0.0.0',
-            port: 3003
-        })
+
+        // server.
+
+        // server.connection({
+        //     address: '0.0.0.0',
+        //     port: 3000,
+        //     tls: tls
+        // })
+        // server.connection({
+        //     address: '0.0.0.0',
+        //     port: 3003
+        // })
 
         //faf
 
