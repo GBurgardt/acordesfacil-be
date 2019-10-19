@@ -37,11 +37,15 @@ exports.getQuantityTabById = {
 
 
 exports.getGoogleChords = {
-    path: '/google/{search}',
+    path: '/google',
     handler: async (request, h) => {
-        const { search } = request.params;
+        const { search, start } = request.query;
 
-        const suggestions = await scrapUtils.getGoogleSuggestionsBySearch(search);
+        if (!search) {
+            return null
+        }
+
+        const suggestions = await scrapUtils.getGoogleSuggestionsBySearch(search, start);
 
         return suggestions;
     },

@@ -2,8 +2,24 @@ import { get } from 'request-promise';
 import ScrapResponse from '../models/scrapResponse';
 
 const baseUrl = 'https://acordes.lacuerda.net';
-const $ = require('cheerio');
+const cheerio = require('cheerio');
+const iconv = require('iconv-lite');
+const rp = require('request-promise');
 
+const getRequestDefault = (method, url) =>
+    rp({
+        encoding: null,
+        method: method,
+        uri: url
+    }).then(html => {
+        const $ = cheerio.load(
+            iconv.decode(
+                new Buffer(html), "ISO-8859-1"
+            )
+        );
+
+        return $;
+    })
 
 
 /**
@@ -11,12 +27,12 @@ const $ = require('cheerio');
  * @param {*} hrefSongId ejemplo: En https://acordes.lacuerda.net/enanitos/amores_lejanos-7.shtml sería enanitos/amores_lejanos-7
  */
 export const getCompleteTabById = (hrefSongId: String): Promise<ScrapResponse> =>
-    get(`${baseUrl}/${hrefSongId}.shtml`)
+    getRequestDefault('GET', `${baseUrl}/${hrefSongId}.shtml`)
         .then(
-            html => {
-                const preElement = $('pre', html);
+            $ => {
+                const preElement = $('pre');
 
-                return { body: preElement.text(), statusCode: 200 }
+                return { body: preElement.html(), statusCode: 200 }
             }
         )
         .catch(
@@ -24,59 +40,11 @@ export const getCompleteTabById = (hrefSongId: String): Promise<ScrapResponse> =
         );
 
 
-export const getQuantityTabById = (hrefSongId: String): Promise<ScrapResponse> =>
-    get(`${baseUrl}/${hrefSongId}`)
+export const getGoogleSuggestionsBySearch = (search: String, start: number = 0): Promise<ScrapResponse> =>
+    get(`https://www.google.com/search?q=${search.replace(new RegExp(' ', 'g'), '+')}+%22acordes.lacuerda.net%22&start=${start}`)
         .then(
             html => {
-
-                const rmainTrs = $('#r_main > tbody > tr', html);
-
-                const cant: any = rmainTrs && rmainTrs.length ? 
-                    rmainTrs.length - 1 : null;
-
-                return { body: cant, statusCode: 200 }
-            }
-        )
-        .catch(
-            ({ message: body, statusCode }) => ({ body, statusCode })
-        );
-
-export const getGoogleSuggestionsBySearchOld = (search: String): Promise<ScrapResponse> =>
-    get(`https://www.google.com/search?q=${search.replace(new RegExp(' ', 'g'), '+')}+la+cuerda`) 
-        .then(
-            html => {
-                console.log(`https://www.google.com/search?q=${search.replace(new RegExp(' ', 'g'), '+')}+la+cuerda`)
-                const domResp = $('.BNeawe .v9i61e a', html);
-
-                let suggestions = [];
-
-                domResp.map((i, elem) => {
-
-                    const auxHref = $(elem).attr('href');
-                    const href = auxHref.substring(
-                        7,
-                        auxHref.indexOf('&sa=')
-                    )
-
-                    suggestions.push({
-                        href,
-                        text: $(elem).text()
-                    })
-                });
-
-                return { body: suggestions, statusCode: 200 }
-            }
-        )
-        .catch(
-            ({ message: body, statusCode }) => ({ body, statusCode })
-        )
-
-
-export const getGoogleSuggestionsBySearch = (search: String): Promise<ScrapResponse> =>
-    get(`https://www.google.com/search?q=${search.replace(new RegExp(' ', 'g'), '+')}+la+cuerda`) 
-        .then(
-            html => {
-                
+                const $ = cheerio;
                 const domResp = $('a', html);
 
                 let suggestions = [];
@@ -98,17 +66,28 @@ export const getGoogleSuggestionsBySearch = (search: String): Promise<ScrapRespo
                         const text = href
                             .split('/')
                             .map(
-                                a => 
-                                    a && a.length > 0 ? 
+                                a =>
+                                    a && a.length > 0 ?
                                         `${a[0].toUpperCase()}${a.slice(1)}`
                                             .replace(new RegExp('_', 'g'), ' ')
-                                        : 
+                                        :
                                         ''
                             )
                             .join(', ')
 
-                        suggestions.push({ href, text })
-                    });
+                        const songName = text
+                            .substring(
+                                text.indexOf(',') + 1
+                            )
+                            .trim()
+
+                        if (
+                            !href.includes('.lacuerda.') &&
+                            songName.replace(/\s/g, '').length
+                        ) {
+                            suggestions.push({ href, text })
+                        }
+                    })
 
                 return { body: suggestions, statusCode: 200 }
             }
@@ -116,3 +95,21 @@ export const getGoogleSuggestionsBySearch = (search: String): Promise<ScrapRespo
         .catch(
             ({ message: body, statusCode }) => ({ body, statusCode })
         )
+
+
+export const getQuantityTabById = (hrefSongId: String): Promise<ScrapResponse> =>
+    get(`${baseUrl}/${hrefSongId}`)
+        .then(
+            html => {
+                const $ = cheerio;
+                const rmainTrs = $('#r_main > tbody > tr', html);
+
+                const cant: any = rmainTrs && rmainTrs.length ?
+                    rmainTrs.length - 1 : null;
+
+                return { body: cant, statusCode: 200 }
+            }
+        )
+        .catch(
+            ({ message: body, statusCode }) => ({ body, statusCode })
+        );
