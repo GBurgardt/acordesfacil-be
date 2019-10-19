@@ -4,7 +4,6 @@ const hapiConfig = require('./config/hapi-config');
 const routesJson = require('./routes');
 const routes = Object.keys(routesJson).map(rk => routesJson[rk][rk])
 
-
 const fs = require('fs');
 
 const isProduction = process.env.ACORDESFACIL_IS_PROD;

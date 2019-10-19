@@ -1,4 +1,4 @@
 export default interface ScrapResponse {
     statusCode: number,
-    body: string
+    body: any
 }
