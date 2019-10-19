@@ -13,7 +13,7 @@ if (isProduction) {
     const tls = {
         key: fs.readFileSync('/etc/letsencrypt/live/acordesfacil.tk/privkey.pem', 'utf8'),
         cert: fs.readFileSync('/etc/letsencrypt/live/acordesfacil.tk/cert.pem', 'utf8'),
-        // ca: fs.readFileSync('/etc/letsencrypt/live/acordesfacil.tk/chain.pem', 'utf8')
+        ca: fs.readFileSync('/etc/letsencrypt/live/acordesfacil.tk/chain.pem', 'utf8')
     };
 
     // Init server
