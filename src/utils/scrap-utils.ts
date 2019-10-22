@@ -87,6 +87,7 @@ export const getGoogleSuggestionsBySearch = (search: String, start: number = 0):
                             !href.includes('&source') &&
                             !href.includes('&ie') &&
                             !href.includes('&ei') &&
+                            !href.includes('.txt') &&
                             songName.replace(/\s/g, '').length
                         ) {
                             suggestions.push({ href, text })
