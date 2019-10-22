@@ -28,7 +28,12 @@ exports.getQuantityTabById = {
     path: '/quantity/{hrefArtistId}/{hrefSongId}',
     handler: async (request, h) => {
         const { hrefArtistId, hrefSongId } = request.params;
-        const hrefTabId = `${hrefArtistId}/${hrefSongId}`;
+        const hrefTabId = 
+            `${hrefArtistId}/${hrefSongId}`.includes('-') ?
+                `${hrefArtistId}/${hrefSongId}`.substring(
+                    0, `${hrefArtistId}/${hrefSongId}`.indexOf('-')
+                ) : 
+                `${hrefArtistId}/${hrefSongId}`
         const cant = await scrapUtils.getQuantityTabById(hrefTabId);
         return cant;
     },

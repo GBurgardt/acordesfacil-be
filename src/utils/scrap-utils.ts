@@ -81,8 +81,12 @@ export const getGoogleSuggestionsBySearch = (search: String, start: number = 0):
                             )
                             .trim()
 
+
                         if (
                             !href.includes('.lacuerda.') &&
+                            !href.includes('&source') &&
+                            !href.includes('&ie') &&
+                            !href.includes('&ei') &&
                             songName.replace(/\s/g, '').length
                         ) {
                             suggestions.push({ href, text })
