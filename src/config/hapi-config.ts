@@ -15,21 +15,6 @@ const initHapi = (routes, tls?) => {
             tls: tls
         })
 
-        // server.
-
-        // server.connection({
-        //     address: '0.0.0.0',
-        //     port: 3000,
-        //     tls: tls
-        // })
-        // server.connection({
-        //     address: '0.0.0.0',
-        //     port: 3003
-        // })
-
-        //faf
-
-        // Add all routes
         routes.forEach(r => server.route(r))
 
         return server.start()

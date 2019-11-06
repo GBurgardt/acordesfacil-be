@@ -1,14 +1,6 @@
 import scrapUtils = require('../utils/scrap-utils');
+import { defaultRequest } from '../utils/database-utils';
 
-const defaultRequest = {
-    method: 'GET',
-    config: {
-        cors: {
-            origin: ['*'],
-            additionalHeaders: ['cache-control', 'x-requested-with']
-        }
-    }
-}
 
 exports.getTabById = {
     path: '/{hrefArtistId}/{hrefSongId}',

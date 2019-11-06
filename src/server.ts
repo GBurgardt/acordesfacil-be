@@ -1,12 +1,10 @@
 const hapiConfig = require('./config/hapi-config');
-
-// Import routes
 const routesJson = require('./routes');
 const routes = Object.keys(routesJson).map(rk => routesJson[rk][rk])
-
 const fs = require('fs');
-
 const isProduction = process.env.ACORDESFACIL_IS_PROD;
+
+
 
 if (isProduction) {
     const tls = {
@@ -31,4 +29,5 @@ if (isProduction) {
         )
 
 }
+
 

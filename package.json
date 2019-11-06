@@ -8,8 +8,10 @@
     "@types/express": "^4.17.1",
     "@types/hapi": "^18.0.2",
     "@types/hapi__hapi": "^18.2.5",
+    "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "iconv-lite": "^0.5.0",
+    "mysql": "^2.17.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "ts-node-dev": "^1.0.0-pre.43",
@@ -20,9 +22,10 @@
   },
   "scripts": {
     "tsc": "tsc",
-    "dev": "ts-node-dev --respawn --no-notify --transpileOnly ./src/server.ts",
-    "dev:prod": "ACORDESFACIL_IS_PROD=1 ts-node-dev --respawn --no-notify --transpileOnly ./src/server.ts",
-    "prod:TODO": "tsc && node ./dist/server.js"
+    "define:env": "MYSQL_USER=german MYSQL_PASS=alberdi11 ",
+    "dev": "npm run define:env ts-node-dev --respawn --no-notify --transpileOnly ./src/server.ts",
+    "dev:prod": "npm run define:env ACORDESFACIL_IS_PROD=1 ts-node-dev --respawn --no-notify --transpileOnly ./src/server.ts",
+    "prod:TODO": "npm run define:env tsc && node ./dist/server.js"
   },
   "author": "",
   "license": "ISC"
