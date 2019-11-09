@@ -16,6 +16,18 @@ exports.getTabById = {
     ...defaultRequest
 }
 
+exports.getTabByLaCuerdaIdAndTone = {
+    path: '/cuerda/{laCuerdaId}/{tone}',
+    handler: async (request, h) => {
+        const { laCuerdaId, tone } = request.params;
+
+        const tab = await scrapUtils.getCompleteTabByLaCuerdaIdAndTone(laCuerdaId, tone);
+
+        return tab;
+    },
+    ...defaultRequest
+}
+
 exports.getQuantityTabById = {
     path: '/quantity/{hrefArtistId}/{hrefSongId}',
     handler: async (request, h) => {

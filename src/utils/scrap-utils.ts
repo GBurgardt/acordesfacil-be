@@ -6,7 +6,7 @@ const cheerio = require('cheerio');
 const iconv = require('iconv-lite');
 const rp = require('request-promise');
 
-const getRequestDefault = (method, url) =>
+const getScrapRequest = (method, url) =>
     rp({
         encoding: null,
         method: method,
@@ -21,23 +21,61 @@ const getRequestDefault = (method, url) =>
         return $;
     })
 
+const getNormalRequest = (method, url) =>
+    rp({
+        method: method,
+        uri: url
+    }).then(
+        resp => JSON.parse(resp)
+    )
+
 
 /**
  * Obtener una tab con textos 
  * @param {*} hrefSongId ejemplo: En https://acordes.lacuerda.net/enanitos/amores_lejanos-7.shtml sería enanitos/amores_lejanos-7
  */
 export const getCompleteTabById = (hrefSongId: String): Promise<ScrapResponse> =>
-    getRequestDefault('GET', `${baseUrl}/${hrefSongId}.shtml`)
+    getScrapRequest('GET', `${baseUrl}/${hrefSongId}.shtml`)
         .then(
             $ => {
                 const preElement = $('pre');
+                const th2div = $('#t_h2 div');
 
-                return { body: preElement.html(), statusCode: 200 }
+                return { body: {
+                    pre: preElement.html(),
+                    laCuerdaId: th2div.text()
+
+                }, statusCode: 200 }
             }
         )
         .catch(
             ({ message: body, statusCode }) => ({ body, statusCode })
         );
+
+/**
+ * Obtener una tab dado su laCuerdaId y su tono 
+ */
+export const getCompleteTabByLaCuerdaIdAndTone = (laCuerdaId: String, tone: String): Promise<ScrapResponse> =>
+    getNormalRequest('GET', `https://acordes.lacuerda.net/TRAN/procTran.php?codigo=${laCuerdaId}&action=newact&reqn=0&reqo=${tone}`)
+        .then(
+            resp => ({ 
+                body: {
+                    ...resp,
+                    laCuerdaId,
+                    pre: cheerio.load(
+                        iconv.decode(
+                            new Buffer(resp.body), "ISO-8859-1"
+                        )
+                    )('pre').html()
+                    // pre: resp.body
+                }, 
+                statusCode: 200 
+            })
+        )
+        .catch(
+            ({ message: body, statusCode }) => ({ body, statusCode })
+        );
+        
 
 
 export const getGoogleSuggestionsBySearch = (search: String, start: number = 0): Promise<ScrapResponse> =>
