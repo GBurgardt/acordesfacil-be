@@ -63,9 +63,10 @@ export const getCompleteTabByLaCuerdaIdAndTone = (laCuerdaId: String, tone: Stri
                     ...resp,
                     laCuerdaId,
                     pre: cheerio.load(
-                        iconv.decode(
-                            new Buffer(resp.body), "ISO-8859-1"
-                        )
+                        resp.body
+                        // iconv.decode(
+                        //     new Buffer(resp.body), "ISO-8859-1"
+                        // )
                     )('pre').html()
                     // pre: resp.body
                 }, 
