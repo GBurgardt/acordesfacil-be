@@ -1,5 +1,6 @@
 import { get } from 'request-promise';
 import ScrapResponse from '../models/scrapResponse';
+import { SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG } from 'constants';
 
 const baseUrl = 'https://acordes.lacuerda.net';
 const cheerio = require('cheerio');
@@ -26,7 +27,18 @@ const getNormalRequest = (method, url) =>
         method: method,
         uri: url
     }).then(
-        resp => JSON.parse(resp)
+        resp => {
+            try {
+                return JSON.parse(resp);
+            } catch(err) {
+                return resp
+            }
+        }
+    )
+    .catch(
+        err => {
+            console.log(err)
+        }
     )
 
 
@@ -41,11 +53,13 @@ export const getCompleteTabById = (hrefSongId: String): Promise<ScrapResponse> =
                 const preElement = $('pre');
                 const th2div = $('#t_h2 div');
 
-                return { body: {
-                    pre: preElement.html(),
-                    laCuerdaId: th2div.text()
-
-                }, statusCode: 200 }
+                return { 
+                    body: {
+                        pre: preElement.html(),
+                        laCuerdaId: th2div.text()
+                    }, 
+                    statusCode: 200 
+                }
             }
         )
         .catch(
@@ -59,22 +73,27 @@ export const getCompleteTabByLaCuerdaIdAndTone = (laCuerdaId: String, tone: Stri
     getNormalRequest('GET', `https://acordes.lacuerda.net/TRAN/procTran.php?codigo=${laCuerdaId}&action=newact&reqn=0&reqo=${tone}`)
         .then(
             resp => ({ 
-                body: {
-                    ...resp,
-                    laCuerdaId,
-                    pre: cheerio.load(
-                        resp.body
-                        // iconv.decode(
-                        //     new Buffer(resp.body), "ISO-8859-1"
-                        // )
-                    )('pre').html()
-                    // pre: resp.body
-                }, 
+                body: 
+                    resp && resp.body ?
+                        {
+                            ...resp,
+                            laCuerdaId,
+                            pre: cheerio.load(
+                                resp.body
+                            )('pre').html()
+                        } : 
+                        {
+                            pre: null,
+                            laCuerdaId: null
+                        }, 
                 statusCode: 200 
             })
         )
         .catch(
-            ({ message: body, statusCode }) => ({ body, statusCode })
+            ({ message: body, statusCode }) => {
+                console.log(body)
+                return { body, statusCode }
+            }
         );
         
 
