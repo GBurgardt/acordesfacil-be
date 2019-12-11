@@ -18,11 +18,11 @@
     "typescript": "^3.6.3"
   },
   "devDependencies": {
+    "@types/node": "^12.12.17",
     "@types/request-promise": "^4.1.44"
   },
   "scripts": {
     "tsc": "tsc",
-    
     "dev": "MYSQL_USER=german MYSQL_PASS=alberdi11 ts-node-dev --respawn --no-notify --transpileOnly ./src/server.ts",
     "dev:prod": "MYSQL_USER=german MYSQL_PASS=alberdi11 ACORDESFACIL_IS_PROD=1 ts-node-dev --respawn --no-notify --transpileOnly ./src/server.ts",
     "prod:TODO": "MYSQL_USER=german MYSQL_PASS=alberdi11 tsc && node ./dist/server.js"

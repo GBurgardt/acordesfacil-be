@@ -82,7 +82,7 @@ exports.getUserFavorites = {
 
         const { username } = request.params;
 
-        return simpleQuery(`select * from favorites where username = '${username}'`)
+        return simpleQuery(`select * from favorites where username = '${username}' order by creationTime`)
             .then(
                 (res: any) => 
                     defaultResponse('Lista de favoritos', 0, res)
