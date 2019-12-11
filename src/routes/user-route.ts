@@ -56,7 +56,11 @@ exports.createFavorite = {
         const { username } = request.payload;
         const { description } = request.payload;
 
-        return simpleQuery(`insert into favorites values ('${href}', '${username}', '${description}');`)
+        const now = new Date();
+        const mysqlNow = now.toISOString().slice(0, 19).replace('T', ' ');
+        console.log(mysqlNow);
+
+        return simpleQuery(`insert into favorites values ('${href}', '${username}', '${description}', '${mysqlNow}');`)
             .then(
                 (res: any) => 
                     res && res.affectedRows && res.affectedRows > 0 ?
@@ -82,7 +86,7 @@ exports.getUserFavorites = {
 
         const { username } = request.params;
 
-        return simpleQuery(`select * from favorites where username = '${username}' order by creationTime`)
+        return simpleQuery(`select * from favorites where username = '${username}' order by creationTime desc`)
             .then(
                 (res: any) => 
                     defaultResponse('Lista de favoritos', 0, res)
