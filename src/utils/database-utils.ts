@@ -1,7 +1,8 @@
 const mysql = require('mysql');
 
 const pool = mysql.createPool({
-    host: "acordesfacil.tk",
+    // host: "acordesfacil.tk",
+    host: "acordesfacil.crabdance.com",
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASS,
     database : 'acordesfacilDB',
@@ -18,7 +19,6 @@ export const simpleQuery = (query) =>
                     if (err) {
                         reject(err);
                     } else {
-        
                         resolve(result)
                     }
                 }
