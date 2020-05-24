@@ -13,10 +13,16 @@ const getScrapRequest = (method, url) =>
         method: method,
         uri: url
     }).then(html => {
+        // const $ = cheerio.load(
+        //     iconv.decode(
+        //         new Buffer(html), "ISO-8859-1"
+        //     )
+        // );
         const $ = cheerio.load(
             iconv.decode(
-                new Buffer(html), "ISO-8859-1"
-            )
+                new Buffer(html), "UTF-8"
+            ),
+            { decodeEntities: false }
         );
 
         return $;
@@ -50,13 +56,22 @@ export const getCompleteTabById = (hrefSongId: String): Promise<ScrapResponse> =
     getScrapRequest('GET', `${baseUrl}/${hrefSongId}.shtml`)
         .then(
             $ => {
-                const preElement = $('pre');
-                const th2div = $('#t_h2 div');
+                    
+                const auxScriptCode = $('head script');
+
+                const auxcac = auxScriptCode.toString();
+                const code = auxcac
+                    .substring(
+                        auxcac.indexOf(`ocod='`) + `ocod='`.length,
+                        auxcac.indexOf(', odes') - 1
+                    )
+
+                const preElement = $('#t_body pre');
 
                 return { 
                     body: {
                         pre: preElement.html(),
-                        laCuerdaId: th2div.text()
+                        laCuerdaId: code
                     }, 
                     statusCode: 200 
                 }
@@ -175,4 +190,36 @@ export const getQuantityTabById = (hrefSongId: String): Promise<ScrapResponse> =
         )
         .catch(
             ({ message: body, statusCode }) => ({ body, statusCode })
+        );
+
+
+
+/**
+ * Obtener tab en tonalidad orgiinal
+ */
+export const getOriginalTab = (laCuerdaId: String, tone: String): Promise<ScrapResponse> =>
+    getNormalRequest('GET', `https://acordes.lacuerda.net/TRAN/procTran.php?codigo=${laCuerdaId}&action=newact&reqn=0&reqo=${tone}`)
+        .then(
+            resp => ({ 
+                body: 
+                    resp && resp.body ?
+                        {
+                            ...resp,
+                            laCuerdaId,
+                            pre: cheerio.load(
+                                resp.body
+                            )('pre').html()
+                        } : 
+                        {
+                            pre: null,
+                            laCuerdaId: null
+                        }, 
+                statusCode: 200 
+            })
+        )
+        .catch(
+            ({ message: body, statusCode }) => {
+                console.log(body)
+                return { body, statusCode }
+            }
         );
