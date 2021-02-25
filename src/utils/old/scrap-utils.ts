@@ -48,71 +48,6 @@ const getNormalRequest = (method, url) =>
     )
 
 
-export const getGoogleSuggestionsBySearch = (search: String, start: number = 0): Promise<ScrapResponse> =>
-    get(`https://www.google.com/search?q=${search.replace(new RegExp(' ', 'g'), '+')}+%22acordes.lacuerda.net%22&start=${start}`)
-        .then(
-            html => {
-                const $ = cheerio;
-                const domResp = $('a', html);
-
-                let suggestions = [];
-
-                domResp
-                    .filter((i, elem) => {
-                        const auxHref = $(elem).attr('href');
-                        return auxHref.includes('acordes.lacuerda.net')
-                    })
-                    .map((i, elem) => {
-                        const auxHref = $(elem).attr('href');
-                        const href: string = auxHref
-                            .substring(
-                                auxHref.indexOf('https://acordes.lacuerda.net/') + 'https://acordes.lacuerda.net/'.length,
-                                auxHref.indexOf('&sa=')
-                            )
-                            .replace(new RegExp('.shtml', 'g'), '')
-
-                        const text = href
-                            .split('/')
-                            .map(
-                                a =>
-                                    a && a.length > 0 ?
-                                        `${a[0].toUpperCase()}${a.slice(1)}`
-                                            .replace(new RegExp('_', 'g'), ' ')
-                                        :
-                                        ''
-                            )
-                            .join(', ')
-
-                        const songName = text
-                            .substring(
-                                text.indexOf(',') + 1
-                            )
-                            .trim()
-
-
-                        if (
-                            !href.includes('.lacuerda.') &&
-                            !href.includes('&source') &&
-                            !href.includes('&ie') &&
-                            !href.includes('&ei') &&
-                            !href.includes('.txt') &&
-                            songName.replace(/\s/g, '').length
-                        ) {
-                            suggestions.push({ href, text })
-                        }
-                    })
-
-                return { body: suggestions, statusCode: 200 }
-            }
-        )
-        .catch(
-            ({ message: body, statusCode }) => ({ body, statusCode })
-        )
-
-
-
-
-
 /**
  * Obtener una tab con textos 
  * @param {*} hrefSongId ejemplo: En https://acordes.lacuerda.net/enanitos/amores_lejanos-7.shtml sería enanitos/amores_lejanos-7
@@ -177,6 +112,67 @@ export const getCompleteTabByLaCuerdaIdAndTone = (laCuerdaId: String, tone: Stri
         );
         
 
+
+export const getGoogleSuggestionsBySearch = (search: String, start: number = 0): Promise<ScrapResponse> =>
+    get(`https://www.google.com/search?q=${search.replace(new RegExp(' ', 'g'), '+')}+%22acordes.lacuerda.net%22&start=${start}`)
+        .then(
+            html => {
+                const $ = cheerio;
+                const domResp = $('a', html);
+
+                let suggestions = [];
+
+                domResp
+                    .filter((i, elem) => {
+                        const auxHref = $(elem).attr('href');
+                        return auxHref.includes('acordes.lacuerda.net')
+                    })
+                    .map((i, elem) => {
+                        const auxHref = $(elem).attr('href');
+                        const href: string = auxHref
+                            .substring(
+                                auxHref.indexOf('https://acordes.lacuerda.net/') + 'https://acordes.lacuerda.net/'.length,
+                                auxHref.indexOf('&sa=')
+                            )
+                            .replace(new RegExp('.shtml', 'g'), '')
+
+                        const text = href
+                            .split('/')
+                            .map(
+                                a =>
+                                    a && a.length > 0 ?
+                                        `${a[0].toUpperCase()}${a.slice(1)}`
+                                            .replace(new RegExp('_', 'g'), ' ')
+                                        :
+                                        ''
+                            )
+                            .join(', ')
+
+                        const songName = text
+                            .substring(
+                                text.indexOf(',') + 1
+                            )
+                            .trim()
+
+
+                        if (
+                            !href.includes('.lacuerda.') &&
+                            !href.includes('&source') &&
+                            !href.includes('&ie') &&
+                            !href.includes('&ei') &&
+                            !href.includes('.txt') &&
+                            songName.replace(/\s/g, '').length
+                        ) {
+                            suggestions.push({ href, text })
+                        }
+                    })
+
+                return { body: suggestions, statusCode: 200 }
+            }
+        )
+        .catch(
+            ({ message: body, statusCode }) => ({ body, statusCode })
+        )
 
 
 export const getQuantityTabById = (hrefSongId: String): Promise<ScrapResponse> =>
