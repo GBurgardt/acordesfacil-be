@@ -11,7 +11,7 @@ const initHapi = (routes, tls?) => {
 
     if (tls) {
         const server: hapi.Server = new hapi.Server({
-            port: 3000,
+            port: 3001,
             tls: tls
         })
 
@@ -24,8 +24,8 @@ const initHapi = (routes, tls?) => {
     } else {
 
         const server: hapi.Server = new hapi.Server({
-            host: 'localhost',
-            port: 3000
+            host: '192.168.0.243',
+            port: 3001
         });
 
         // Add all routes

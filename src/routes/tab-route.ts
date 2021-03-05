@@ -14,6 +14,9 @@ exports.getGoogleChords = {
 
         const suggestions = await scrapUtils.getGoogleSuggestionsBySearch(search, start);
 
+
+        console.log(suggestions)
+
         return suggestions;
     },
     ...defaultRequest
@@ -27,7 +30,6 @@ exports.getTabById = {
 
         const hrefTabId = `${hrefArtistId}/${hrefSongId}`;
 
-        // const tab = await scrapUtils.getCompleteTabById(hrefTabId);
         const tab = await databaseUtils.getCompleteTabById(hrefTabId);
 
         return tab;

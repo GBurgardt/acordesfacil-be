@@ -43,50 +43,17 @@ export const defaultResponse = (message, status = 0, body = null) => ({
     body
 })
 
-
-
-/**
- * Obtener una tab con textos 
- * @param {*} hrefSongId ejemplo: En https://acordes.lacuerda.net/enanitos/amores_lejanos-7.shtml sería enanitos/amores_lejanos-7
- */
-export const getCompleteTabById2 = (hrefSongId: String): Promise<any> =>
-    simpleQuery(`${hrefSongId}`)
-        .then(
-            $ => {
-                    
-                return { 
-                    body: {
-                        pre: null,
-                        laCuerdaId: null
-                    }, 
-                    statusCode: 200 
-                }
-            }
-        )
-        .catch(
-            ({ message: body, statusCode }) => ({ body, statusCode })
-        );
+/////////////////////////////////////////////////////////////////////////////////////
+///// ######################################################################### /////
+/////////////////////////////////////////////////////////////////////////////////////
 
 export const getCompleteTabById = (href) => 
     simpleQuery(`select * from tablatures where href = '/${href}'`)
         .then(
-            (res: any) => {
-                console.log("res")
-                console.log(res)
-                console.log("res22")
-
-                return { 
-                    body: {
-                        pre: res && res.length > 0 ? res[0].htmlTab : null,
-                        laCuerdaId: null
-                    }, 
-                    statusCode: 200 
-                }
-                // return res && res.length > 0 ?
-                // defaultResponse('Success', 0, res) :
-                // defaultResponse('Error', -1)
-            }
-                
+            (res: any) => ({
+                body: res[0],
+                statusCode: 200
+            })  
         )
         .catch(
             err => {
